@@ -3,6 +3,9 @@ from django.db import models
 
 
 class CustomUser(AbstractUser):
+    patronymic = models.CharField(
+        max_length=100, verbose_name="Отчество", help_text="Введите отчество", null=True, blank=True
+    )
     email = models.EmailField(unique=True, verbose_name="email")
 
     telephone = models.CharField(
