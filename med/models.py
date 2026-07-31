@@ -110,3 +110,32 @@ class Appointment(models.Model):
         verbose_name = "Запись на прием"
         verbose_name_plural = "Записи на прием"
         ordering = ["owner", "date_time", "status"]
+
+class Content(models.Model):
+    name = models.CharField(
+        max_length=150, verbose_name="Наименование организации", help_text="Введите наименование организации"
+    )
+    photo = models.ImageField(
+        upload_to="static/photo/", null=True, blank=True, verbose_name="Фото организации", help_text="Загрузите фото организации"
+    )
+    description = models.TextField(
+        null=True, blank=True, verbose_name="Описание организации", help_text="Введите описание организации"
+    )
+    address = models.TextField(
+        null=True, blank=True, verbose_name="Адрес организации", help_text="Введите адрес организации"
+    )
+    email = models.EmailField(unique=True, verbose_name="email организации")
+
+    telephone = models.CharField(
+        max_length=20, verbose_name="Номер телефона", null=True, blank=True, help_text="Введите номер телефона организации"
+    )
+    operating_mode = models.CharField(
+        max_length=150, verbose_name="Режим работы (кратко)", help_text="Введите режим работы организации"
+    )
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Управление контентом сайта"
+        verbose_name_plural = "Управление контентом сайта"
+        ordering = ["name"]
