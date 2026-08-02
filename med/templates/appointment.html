@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- ЗАПИСЬ НА ПРИЁМ -->
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'med:home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'med:home' %}#services">Услуги</a></li>
+            <li class="breadcrumb-item active">Запись на приём</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="text-center mb-4">
+                        <i class="bi bi-calendar-plus text-primary me-2"></i>
+                        Запись на приём
+                    </h2>
+                    <p class="text-center text-secondary mb-4">
+                        Заполните форму, и мы свяжемся с вами для подтверждения записи
+                    </p>
+
+                    <!-- Форма записи -->
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Поля для незарегистрированных пользователей -->
+                        {% if not user.is_authenticated %}
+                            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                Для удобства рекомендуем 
+                                <a href="{% url 'users:login' %}" class="alert-link">войти</a> или 
+                                <a href="{% url 'users:register' %}" class="alert-link">зарегистрироваться</a>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="nameInput" 
+                                               name="name" 
+                                               placeholder="Иван Иванов" 
+                                               required />
+                                        <label for="nameInput"><i class="bi bi-person me-1"></i> Ваше имя *</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="tel" class="form-control" id="phoneInput" 
+                                               name="phone" 
+                                               placeholder="+7 (999) 123-45-67" 
+                                               required />
+                                        <label for="phoneInput"><i class="bi bi-phone me-1"></i> Телефон *</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" class="form-control" id="emailInput" 
+                                               name="email" 
+                                               placeholder="ivan@mail.ru" />
+                                        <label for="emailInput"><i class="bi bi-envelope me-1"></i> E-mail</label>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- Для авторизованных пользователей -->
+                            <div class="alert alert-success" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                Вы записываетесь как <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                <br>
+                                <small class="text-secondary">
+                                    <i class="bi bi-envelope me-1"></i> {{ user.email }}
+                                    {% if user.telephone %}
+                                        · <i class="bi bi-phone me-1"></i> {{ user.telephone }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            
+                            <!-- Скрытые поля для авторизованного пользователя -->
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                        {% endif %}
+
+                        <!-- Выбор категории -->
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="categorySelect" name="category" required>
+                                <option value="">Выберите категорию</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.pk }}">{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="categorySelect"><i class="bi bi-tag me-1"></i> Категория услуги *</label>
+                        </div>
+
+                        <!-- Выбор услуги -->
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="serviceSelect" name="service" required disabled>
+                                <option value="">Сначала выберите категорию</option>
+                            </select>
+                            <label for="serviceSelect"><i class="bi bi-clipboard2-pulse me-1"></i> Услуга *</label>
+                        </div>
+
+                        <!-- Выбор врача -->
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="doctorSelect" name="doctor" required disabled>
+                                <option value="">Сначала выберите услугу</option>
+                            </select>
+                            <label for="doctorSelect"><i class="bi bi-person-badge me-1"></i> Врач *</label>
+                        </div>
+
+                        <!-- Дата и время -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="date" class="form-control" id="dateInput" 
+                                           name="date" 
+                                           min="{% now 'Y-m-d' %}"
+                                           required />
+                                    <label for="dateInput"><i class="bi bi-calendar-date me-1"></i> Дата *</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="time" class="form-control" id="timeInput" 
+                                           name="time" 
+                                           min="08:00" 
+                                           max="20:00" 
+                                           required />
+                                    <label for="timeInput"><i class="bi bi-clock me-1"></i> Время *</label>
+                                    <div class="field-hint">Работаем с 8:00 до 20:00</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Комментарий -->
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" id="commentInput" 
+                                      name="comment" 
+                                      placeholder="Дополнительная информация..." 
+                                      rows="3" 
+                                      style="height: 120px;"></textarea>
+                            <label for="commentInput"><i class="bi bi-chat me-1"></i> Комментарий</label>
+                        </div>
+
+                        <!-- Согласие -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="agreeCheck" 
+                                   name="agree" 
+                                   required />
+                            <label class="form-check-label" for="agreeCheck">
+                                Я согласен на обработку <a href="#" class="text-decoration-none">персональных данных</a> *
+                            </label>
+                        </div>
+
+                        <!-- Кнопка отправки -->
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">
+                            <i class="bi bi-calendar-check me-2"></i>Записаться на приём
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Динамическое обновление услуг и врачей
+    document.addEventListener('DOMContentLoaded', function() {
+        const categorySelect = document.getElementById('categorySelect');
+        const serviceSelect = document.getElementById('serviceSelect');
+        const doctorSelect = document.getElementById('doctorSelect');
+        
+        // Данные из контекста Django
+        const servicesData = {{ services_data|default:'{}'|safe }};
+        const doctorsData = {{ doctors_data|default:'{}'|safe }};
+
+        // Обновление услуг
+        categorySelect.addEventListener('change', function() {
+            const categoryId = this.value;
+            
+            // Сброс и блокировка
+            serviceSelect.innerHTML = '<option value="">Сначала выберите категорию</option>';
+            serviceSelect.disabled = true;
+            doctorSelect.innerHTML = '<option value="">Сначала выберите услугу</option>';
+            doctorSelect.disabled = true;
+            
+            if (categoryId && servicesData[categoryId]) {
+                serviceSelect.disabled = false;
+                servicesData[categoryId].forEach(function(service) {
+                    const option = document.createElement('option');
+                    option.value = service.pk;
+                    option.textContent = service.name + (service.price ? ' (' + service.price + ' ₽)' : '');
+                    serviceSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Обновление врачей
+        serviceSelect.addEventListener('change', function() {
+            const serviceId = this.value;
+            
+            doctorSelect.innerHTML = '<option value="">Сначала выберите услугу</option>';
+            doctorSelect.disabled = true;
+            
+            if (serviceId && doctorsData[serviceId]) {
+                doctorSelect.disabled = false;
+                doctorsData[serviceId].forEach(function(doctor) {
+                    const option = document.createElement('option');
+                    option.value = doctor.pk;
+                    option.textContent = doctor.name + (doctor.position ? ' (' + doctor.position + ')' : '');
+                    doctorSelect.appendChild(option);
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

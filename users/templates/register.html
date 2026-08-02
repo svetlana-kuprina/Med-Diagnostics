@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- РЕГИСТРАЦИЯ ПОЛЬЗОВАТЕЛЯ -->
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="auth-card" style="max-width: 550px;">
+        <!-- Логотип / бренд -->
+        <div class="auth-logo">
+            <i class="bi bi-person-plus-fill"></i>
+            <span>МедДиагностика</span>
+        </div>
+        <p class="auth-sub">Создайте аккаунт для доступа ко всем услугам</p>
+
+        <!-- Форма регистрации -->
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Вывод общих ошибок формы -->
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <!-- Электронная почта -->
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="id_email"
+                       name="email"
+                       placeholder="name@example.com"
+                       value="{{ form.email.value|default:'' }}"
+                       required autofocus />
+                <label for="id_email"><i class="bi bi-envelope me-1"></i> Электронная почта *</label>
+                {% if form.email.errors %}
+                    <div class="text-danger small">{{ form.email.errors|first }}</div>
+                {% else %}
+                    <div class="field-hint"><i class="bi bi-info-circle me-1"></i> Будет использоваться для входа</div>
+                {% endif %}
+            </div>
+
+            <!-- Имя пользователя -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="id_username"
+                       name="username"
+                       placeholder="ivan_ivanov"
+                       value="{{ form.username.value|default:'' }}"
+                       required />
+                <label for="id_username"><i class="bi bi-person me-1"></i> Имя пользователя *</label>
+                {% if form.username.errors %}
+                    <div class="text-danger small">{{ form.username.errors|first }}</div>
+                {% else %}
+                    <div class="field-hint"><i class="bi bi-info-circle me-1"></i> От 3 до 150 символов</div>
+                {% endif %}
+            </div>
+
+            <!-- Фамилия, Имя, Отчество -->
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="id_last_name"
+                               name="last_name"
+                               placeholder="Иванов"
+                               value="{{ form.last_name.value|default:'' }}" />
+                        <label for="id_last_name"><i class="bi bi-person me-1"></i> Фамилия</label>
+                        {% if form.last_name.errors %}
+                            <div class="text-danger small">{{ form.last_name.errors|first }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="id_first_name"
+                               name="first_name"
+                               placeholder="Иван"
+                               value="{{ form.first_name.value|default:'' }}" />
+                        <label for="id_first_name"><i class="bi bi-person me-1"></i> Имя</label>
+                        {% if form.first_name.errors %}
+                            <div class="text-danger small">{{ form.first_name.errors|first }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="id_patronymic"
+                               name="patronymic"
+                               placeholder="Иванович"
+                               value="{{ form.patronymic.value|default:'' }}" />
+                        <label for="id_patronymic"><i class="bi bi-person me-1"></i> Отчество</label>
+                        {% if form.patronymic.errors %}
+                            <div class="text-danger small">{{ form.patronymic.errors|first }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Номер телефона -->
+            <div class="form-floating mb-3">
+                <input type="tel" class="form-control" id="id_telephone"
+                       name="telephone"
+                       placeholder="+7 (999) 123-45-67"
+                       value="{{ form.telephone.value|default:'' }}" />
+                <label for="id_telephone"><i class="bi bi-phone me-1"></i> Номер телефона</label>
+                {% if form.telephone.errors %}
+                    <div class="text-danger small">{{ form.telephone.errors|first }}</div>
+                {% else %}
+                    <div class="field-hint"><i class="bi bi-info-circle me-1"></i> Необязательно, но поможет связаться с вами</div>
+                {% endif %}
+            </div>
+
+            <!-- Пароль -->
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="id_password1"
+                               name="password1"
+                               placeholder="Пароль"
+                               required />
+                        <label for="id_password1"><i class="bi bi-lock me-1"></i> Пароль *</label>
+                        {% if form.password1.errors %}
+                            <div class="text-danger small">{{ form.password1.errors|first }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="id_password2"
+                               name="password2"
+                               placeholder="Подтверждение пароля"
+                               required />
+                        <label for="id_password2"><i class="bi bi-lock-fill me-1"></i> Подтвердите пароль *</label>
+                        {% if form.password2.errors %}
+                            <div class="text-danger small">{{ form.password2.errors|first }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Подсказки по паролю -->
+            <div class="small text-secondary mb-3">
+                <i class="bi bi-info-circle me-1"></i> Требования к паролю:
+                <ul class="mt-1 mb-0 ps-3">
+                    <li>Не менее 8 символов</li>
+                    <li>Не должен быть слишком простым или распространённым</li>
+                    <li>Не может состоять только из цифр</li>
+                </ul>
+            </div>
+
+            <!-- Согласие на обработку данных -->
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="agreeCheck"
+                       name="agree_terms"
+                       required />
+                <label class="form-check-label" for="agreeCheck">
+                    Я принимаю <a href="#" class="text-decoration-none">условия использования</a>
+                    и даю согласие на обработку <a href="#" class="text-decoration-none">персональных данных</a> *
+                </label>
+            </div>
+
+            <!-- Кнопка регистрации -->
+            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                <i class="bi bi-person-plus me-2"></i>Зарегистрироваться
+            </button>
+
+            <!-- Ссылка на вход -->
+            <div class="auth-footer">
+                Уже есть аккаунт? <a href="{% url 'users:login' %}">Войти</a>
+                <br />
+                <span class="small text-muted" style="font-size: 0.75rem;">
+                    Вернёмся на главную
+                    <a href="{% url 'med:home' %}" class="text-muted">
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </span>
+            </div>
+        </form>
+
+        <!-- Информация о полях модели -->
+        <div class="mt-3 pt-2 border-top text-center text-secondary" style="font-size: 0.75rem; border-color: #e9edf4 !important;">
+            <i class="bi bi-database me-1"></i>
+            Модель <strong>CustomUser</strong> ·
+            <span class="text-success">email</span> (обязательно) ·
+            <span class="text-success">username</span> (обязательно) ·
+            <span class="text-muted">patronymic</span> ·
+            <span class="text-muted">telephone</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

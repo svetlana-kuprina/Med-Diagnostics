@@ -21,6 +21,41 @@ class Category(models.Model):
         verbose_name_plural = "Категории услуг"
         ordering = ["name"]
 
+class Doctors(models.Model):
+    """Модель: Информация по врачам"""
+
+    name = models.CharField(max_length=150, verbose_name="ФИО", help_text="Введите фамилию имя и отчество врача")
+    position = models.CharField(
+        max_length=150, null=True, blank=True, verbose_name="Должность", help_text="Введите должность врача"
+    )
+    experience = models.CharField(
+        max_length=50, null=True, blank=True, verbose_name="Стаж", help_text="Введите стаж работы"
+    )
+    photo = models.ImageField(
+        upload_to="static/photo/",
+        null=True,
+        blank=True,
+        verbose_name="Фото доктора",
+        help_text="Загрузите фото доктора",
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="doctors",
+        verbose_name="Категория",
+        help_text="Выберите категорию",
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Информация по врачам"
+        verbose_name_plural = "Информации по врачам"
+        ordering = ["name"]
+
 
 class Services(models.Model):
     """Модель: Услуги"""
@@ -40,6 +75,7 @@ class Services(models.Model):
         verbose_name="Категория",
         help_text="Выберите категорию",
     )
+    doctors = models.ManyToManyField(Doctors, null=True, blank=True, related_name="services")
     price = models.FloatField(verbose_name="Цена", help_text="Введите цену услуги")
 
     def __str__(self):
@@ -51,33 +87,6 @@ class Services(models.Model):
         ordering = ["name"]
 
 
-class Doctors(models.Model):
-    """Модель: Информация по врачам"""
-
-    name = models.CharField(max_length=150, verbose_name="ФИО", help_text="Введите фамилию имя и отчество врача")
-    position = models.CharField(
-        max_length=150, null=True, blank=True, verbose_name="Должность", help_text="Введите должность врача"
-    )
-    experience = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name="Стаж", help_text="Введите стаж работы"
-    )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="doctors",
-        verbose_name="Категория",
-        help_text="Выберите категорию",
-    )
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = "Информация по врачам"
-        verbose_name_plural = "Информации по врачам"
-        ordering = ["name"]
 
 
 class Appointment(models.Model):
@@ -120,6 +129,12 @@ class Content(models.Model):
     )
     description = models.TextField(
         null=True, blank=True, verbose_name="Описание организации", help_text="Введите описание организации"
+    )
+    history = models.TextField(
+        null=True, blank=True, verbose_name="История", help_text="Введите историю организации"
+    )
+    mission = models.TextField(
+        null=True, blank=True, verbose_name="Миссия и ценности", help_text="Введите миссию и ценности организации"
     )
     address = models.TextField(
         null=True, blank=True, verbose_name="Адрес организации", help_text="Введите адрес организации"

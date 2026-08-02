@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- СПИСОК ВРАЧЕЙ ПО КАТЕГОРИЯМ -->
+<section class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'med:home' %}">Главная</a></li>
+            <li class="breadcrumb-item active">{{ category.name }}</li>
+        </ol>
+    </nav>
+
+    <h1 class="display-5 fw-bold mb-4">{{ category.name }}</h1>
+    <p class="lead text-secondary mb-5">{{ category.description }}</p>
+
+    <h3 class="mb-4">Врачи в этой категории</h3>
+    
+    {% if doctors %}
+        <div class="row g-4">
+            {% for doctor in doctors %}
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ doctor.name }}</h5>
+                        <div class="col-md-6 text-md-end">
+                    <img src="{{ doctor.photo.url }}" alt="Фото доктора" class="img-fluid rounded-4 shadow-lg" style="max-height: 320px; object-fit: cover; width: 100%;">
+                </div>
+                        <p class="card-text text-secondary">{{ doctor.position }}</p>
+                        <p class="card-text"><strong>Стаж работы:</strong> {{ doctor.experience }} </p>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'med:appointment' %}" class="btn btn-outline-primary btn-lg px-4">Записаться</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            В этой категории пока нет врачей.
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

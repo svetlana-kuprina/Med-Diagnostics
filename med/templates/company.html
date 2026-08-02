@@ -1,0 +1,92 @@
+{%extends 'base.html'%}
+{% block content %}
+    <!-- ГЛАВНАЯ СЕКЦИЯ -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center gy-4">
+                <div class="col-md-6">
+                    <h1 class="display-5 fw-bold text-primary-emphasis">Диагностика с заботой о вас</h1>
+                    <p class="lead text-secondary-emphasis">Современное оборудование, опытные врачи и индивидуальный подход в медицинском центре «{{ content.name }}».</p>
+
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <img src="{{ content.photo.url }}" alt="Медицинский центр" class="img-fluid rounded-4 shadow-lg" style="max-height: 320px; object-fit: cover; width: 100%;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="py-5">
+
+        <!-- О КОМПАНИИ -->
+        <section id="about" class="container mb-5">
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title">О компании</h2>
+                    <p class="fs-5 text-secondary">{{ content.description }}</p>
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="section-title">История</h2>
+                    <p class="fs-5 text-secondary">{{ content.history }}</p>
+                </div>
+                <div class="col-lg-6">
+                    <h2 class="section-title">Миссия и ценности</h2>
+                    <p class="fs-5 text-secondary">{{ content.mission }}</p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="bg-light p-4 rounded-4 shadow-sm">
+                        <div class="row text-center g-3">
+                            <div class="col-6">
+                                <div class="bg-white p-3 rounded-3 shadow-sm">
+                                    <span class="display-6 fw-bold text-primary">12+</span>
+                                    <p class="mb-0 text-secondary">лет опыта</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-white p-3 rounded-3 shadow-sm">
+                                    <span class="display-6 fw-bold text-primary">25</span>
+                                    <p class="mb-0 text-secondary">врачей-специалистов</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-white p-3 rounded-3 shadow-sm">
+                                    <span class="display-6 fw-bold text-primary">40+</span>
+                                    <p class="mb-0 text-secondary">видов исследований</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-white p-3 rounded-3 shadow-sm">
+                                    <span class="display-6 fw-bold text-primary">98%</span>
+                                    <p class="mb-0 text-secondary">точность диагностики</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ПЕРЕЧЕНЬ ВРАЧЕЙ -->
+        <section id="services" class="container mb-5">
+            <h2 class="section-title text-center">Команда врачей</h2>
+            <p class="text-center text-secondary mb-5">Врачи высшей категории, кандидаты медицинских наук</p>
+
+            <div class="row g-4">
+
+                <!-- Врачи по категории -->
+                {% for cat in categories %}
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'med:doctors_list' cat.pk %}" class="text-decoration-none text-dark">
+                <div class="card service-card p-4 h-100">
+                    <div class="service-icon mb-3"><i class="bi bi-clipboard2-pulse"></i></div>
+                    <h5 class="card-title fw-bold">{{ cat.name }}</h5>
+                    <p class="card-text text-secondary">{{ cat.description }}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+            </div>
+        </section>
+
+
+{% endblock %}
