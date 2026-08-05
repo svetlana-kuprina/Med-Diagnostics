@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- ПОДТВЕРЖДЕНИЕ ОТМЕНЫ ЗАПИСИ -->
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <nav aria-label="breadcrumb" class="mb-4">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'med:home' %}">Главная</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'med:profile' %}">Личный кабинет</a></li>
+                            <li class="breadcrumb-item active">Отмена записи</li>
+                        </ol>
+                    </nav>
+
+                    <!-- Заголовок -->
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <span class="display-1 text-danger">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </span>
+                        </div>
+                        <h2 class="mb-2">Отмена записи на приём</h2>
+                        <p class="text-secondary">
+                            Вы уверены, что хотите отменить запись?
+                            <br>
+                            <small class="text-muted">Это действие нельзя будет отменить</small>
+                        </p>
+                    </div>
+
+                    <!-- Информация о записи -->
+                    <div class="bg-light p-4 rounded-4 mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-clipboard2-pulse text-primary mt-1"></i>
+                                    <div>
+                                        <div class="small text-secondary">Услуга</div>
+                                        <div class="fw-semibold">{{ appointment.service.name }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-person-badge text-primary mt-1"></i>
+                                    <div>
+                                        <div class="small text-secondary">Врач</div>
+                                        <div class="fw-semibold">{{ appointment.doctor.name }}</div>
+                                        <div class="small text-secondary">{{ appointment.doctor.position }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-calendar-event text-primary mt-1"></i>
+                                    <div>
+                                        <div class="small text-secondary">Дата и время</div>
+                                        <div class="fw-semibold">{{ appointment.date_time|date:"d.m.Y" }}</div>
+                                        <div class="small text-secondary">{{ appointment.date_time|date:"H:i" }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-tag text-primary mt-1"></i>
+                                    <div>
+                                        <div class="small text-secondary">Стоимость</div>
+                                        <div class="fw-semibold">{{ appointment.service.price }} ₽</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if appointment.comment %}
+                                <div class="col-12">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <i class="bi bi-chat text-primary mt-1"></i>
+                                        <div>
+                                            <div class="small text-secondary">Комментарий</div>
+                                            <div class="text-secondary">{{ appointment.comment }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Предупреждение -->
+                    <div class="alert alert-warning" role="alert">
+                        <div class="d-flex">
+                            <i class="bi bi-exclamation-triangle-fill me-2 mt-1" style="font-size: 1.2rem;"></i>
+                            <div>
+                                <strong>Внимание!</strong>
+                                <p class="mb-0 small">
+                                    После отмены записи вы можете записаться на другое время.
+                                    Если у вас есть вопросы, свяжитесь с нами по телефону.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки действий -->
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <!-- Форма отмены -->
+                        <form action="{% url 'med:cancel_appointment_confirm' appointment.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-lg px-5 w-100 w-sm-auto">
+                                <i class="bi bi-check-circle me-2"></i>Да, отменить запись
+                            </button>
+                        </form>
+                        
+                        <!-- Кнопка возврата -->
+                        <a href="{% url 'med:profile' %}" class="btn btn-outline-secondary btn-lg px-5 w-100 w-sm-auto">
+                            <i class="bi bi-arrow-left me-2"></i>Вернуться в профиль
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Дополнительная информация -->
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Если у вас возникли вопросы, свяжитесь с нами по телефону
+                    <a href="tel:{{ content.telephone }}" class="text-decoration-none">
+                        {{ content.telephone }}
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Дополнительные стили для мобильных устройств -->
+<style>
+    @media (max-width: 576px) {
+        .btn-lg {
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+        }
+        .display-1 {
+            font-size: 3.5rem !important;
+        }
+    }
+</style>
+{% endblock %}

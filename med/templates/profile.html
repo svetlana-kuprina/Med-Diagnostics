@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- ЛИЧНЫЙ КАБИНЕТ ПОЛЬЗОВАТЕЛЯ -->
+<section class="container py-5">
+    <div class="row">
+        <!-- Боковая панель с информацией о пользователе -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-5 text-center">
+                    <h4 class="mb-1">{{ user.get_full_name }} {{ user.patronymic }}</h4>
+                    <p class="text-secondary mb-2">
+                        <i class="bi bi-envelope me-1"></i> {{ user.email }}
+                    </p>
+                    {% if user.telephone %}
+                        <p class="text-secondary mb-2">
+                            <i class="bi bi-phone me-1"></i> {{ user.telephone }}
+                        </p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <span class="badge bg-success">Активен</span>
+                        {% if user.is_staff %}
+                            <span class="badge bg-primary">Сотрудник</span>
+                        {% endif %}
+                    </div>
+                    
+
+                    
+                    <!-- Статистика -->
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="bg-light p-2 rounded-3">
+                                <div class="small text-secondary">Всего записей</div>
+                                <div class="fw-bold fs-5">{{ appointment_count }}</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-light p-2 rounded-3">
+                                <div class="small text-secondary">Активных</div>
+                                <div class="fw-bold fs-5 text-success">
+                                    {{ active_count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="col-lg-8">
+            <h2 class="mb-4">
+                <i class="bi bi-calendar3 text-primary me-2"></i>
+                Мои записи на приём
+            </h2>
+
+            {% if appointment %}
+                <!-- Фильтр по статусу -->
+                <div class="mb-3">
+                    <div class="btn-group" role="group" aria-label="Фильтр записей">
+                        <button type="button" class="btn btn-outline-primary active filter-btn" data-filter="all">
+                            Все
+                        </button>
+                        <button type="button" class="btn btn-outline-success filter-btn" data-filter="active">
+                            Активные
+                        </button>
+                        <button type="button" class="btn btn-outline-warning filter-btn" data-filter="completed">
+                            Исполненные
+                        </button>
+                        <button type="button" class="btn btn-outline-danger filter-btn" data-filter="cancelled">
+                            Отмененные
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Список записей -->
+                <div class="appointments-list">
+                    {% for app in appointment %}
+                        <div class="card shadow-sm border-0 rounded-4 mb-3 appointment-card"
+                             data-status="{{ app.status }}">
+                            <div class="card-body p-4">
+                                <div class="row align-items-start">
+                                    <!-- Информация о записи -->
+                                    <div class="col-md-8">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <!-- Статус -->
+                                            <div class="mt-1">
+                                                {% if app.status == 'active' %}
+                                                    <span class="badge bg-success rounded-pill p-2">
+                                                        <i class="bi bi-check-circle-fill"></i>
+                                                    </span>
+                                                {% elif app.status == 'completed' %}
+                                                    <span class="badge bg-secondary rounded-pill p-2">
+                                                        <i class="bi bi-check2-circle"></i>
+                                                    </span>
+                                                {% elif app.status == 'cancelled' %}
+                                                    <span class="badge bg-danger rounded-pill p-2">
+                                                        <i class="bi bi-x-circle-fill"></i>
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+
+                                            <div>
+                                                <h5 class="card-title mb-1">
+                                                    {{ app.service.name }}
+                                                </h5>
+                                                <p class="text-secondary mb-1">
+                                                    <i class="bi bi-person-badge me-1"></i>
+                                                    {{ app.doctor.name }}
+                                                    <span class="text-muted">({{ app.doctor.position }})</span>
+                                                </p>
+                                                <p class="text-secondary mb-1">
+                                                    <i class="bi bi-calendar-event me-1"></i>
+                                                    {{ app.date_time|date:"d.m.Y H:i" }}
+                                                </p>
+                                                <p class="text-secondary mb-0">
+                                                    <i class="bi bi-tag me-1"></i>
+                                                    {{ app.service.price }} ₽
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Статус и действия -->
+                                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                        <div class="mb-2">
+                                            {% if app.status == 'active' %}
+                                                <span class="badge bg-success px-3 py-2">Активна</span>
+                                            {% elif app.status == 'completed' %}
+                                                <span class="badge bg-secondary px-3 py-2">Исполнена</span>
+                                            {% elif app.status == 'cancelled' %}
+                                                <span class="badge bg-danger px-3 py-2">Отменена</span>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if app.status == 'active' %}
+                                            <form action="{% url 'med:cancel_appointment' app.pk %}"
+                                                  method="post"
+                                                  style="display: inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                        onclick="return confirm('Вы уверены, что хотите отменить запись?')">
+                                                    <i class="bi bi-x-circle me-1"></i>Отменить
+                                                </button>
+                                            </form>
+                                        {% endif %}
+
+                                        {% if app.status == 'completed' and app.result %}
+                                            <button type="button" class="btn btn-outline-primary btn-sm mt-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#resultModal{{ app.pk }}">
+                                                <i class="bi bi-file-text me-1"></i>Результат
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Результат диагностики (если есть) -->
+                                {% if app.result %}
+                                    <div class="mt-3 p-3 bg-light rounded-3">
+                                        <h6 class="mb-2">
+                                            <i class="bi bi-file-medical text-primary me-1"></i>
+                                            Результат диагностики
+                                        </h6>
+                                        <p class="mb-0 text-secondary">{{ app.result }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Модальное окно с результатом -->
+                        {% if app.result %}
+                            <div class="modal fade" id="resultModal{{ app.pk }}" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                <i class="bi bi-file-medical text-primary me-2"></i>
+                                                Результат диагностики
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <strong>Услуга:</strong> {{ app.service.name }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <strong>Врач:</strong> {{ app.doctor.name }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <strong>Дата:</strong> {{ app.date_time|date:"d.m.Y H:i" }}
+                                            </div>
+                                            <div class="p-3 bg-light rounded-3">
+                                                <h6>Результат:</h6>
+                                                <p class="mb-0">{{ app.result|linebreaks }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+            {% else %}
+                <!-- Нет записей -->
+                <div class="text-center py-5">
+                    <i class="bi bi-calendar-plus display-1 text-muted mb-3 d-block"></i>
+                    <h4 class="text-muted">У вас пока нет записей на приём</h4>
+                    <p class="text-secondary mb-3">Запишитесь на диагностику в нашем центре</p>
+                    <a href="{% url 'med:appointment' %}" class="btn btn-primary">
+                        <i class="bi bi-calendar-plus me-2"></i>Записаться на приём
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Фильтрация записей -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const appointmentCards = document.querySelectorAll('.appointment-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Убираем активный класс у всех кнопок
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Добавляем активный класс текущей кнопке
+                this.classList.add('active');
+
+                const filter = this.dataset.filter;
+
+                appointmentCards.forEach(card => {
+                    const status = card.dataset.status;
+
+                    if (filter === 'all' || status === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

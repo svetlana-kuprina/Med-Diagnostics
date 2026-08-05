@@ -1,9 +1,14 @@
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
+
 from django.utils import timezone
 from django.core.mail import send_mail
 from datetime import datetime
+
+from django.views.generic import ListView
+from icecream import ic
 
 from config import settings
 from med.models import Doctors, Content, Category, Services, Appointment
@@ -38,6 +43,7 @@ def company(request):
     content = Content.objects.first()
     categories = Category.objects.all()
     return render(request, "company.html", {"content": content, "categories": categories})
+
 
 def appointment_view(request):
     """Страница записи на приём"""
@@ -97,7 +103,6 @@ def appointment_view(request):
             user_email = request.user.email
             user_name = request.user.get_full_name() or request.user.username
 
-
         # Создаём запись
         appointment = Appointment(
             owner=request.user if request.user.is_authenticated else None,
@@ -129,17 +134,100 @@ def appointment_view(request):
         except Exception as email_error:
             print(f"Ошибка отправки письма: {email_error}")
 
-
         messages.success(
             request,
-            f"✅ Вы успешно записались на приём к {doctor.name} на {date_time.strftime('%d.%m.%Y %H:%M')}! "
+            f"Вы успешно записались на приём к {doctor.name} на {date_time.strftime('%d.%m.%Y %H:%M')}! "
             f"Подтверждение отправлено на ваш email.",
         )
         return redirect("med:home")
 
     except Exception as e:
-        messages.error(request, f"❌ Произошла ошибка при создании записи: {str(e)}")
+        messages.error(request, f"Произошла ошибка при создании записи: {str(e)}")
         return render(request, "appointment.html", context)
-    
 
 
+class ProfileListView(LoginRequiredMixin, ListView):
+    """Личный кабинет пользователя"""
+
+    model = Appointment
+    template_name = "profile.html"
+    context_object_name = "appointment"
+
+    def get_queryset(self):
+        """Фильтрация по пользователю"""
+        return super().get_queryset().filter(owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        """Подсчет списка со статусом "active" и добавление значения в контекст"""
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["owner"] = CustomUser.objects.get(id=self.request.user.id)
+            if context["owner"] == self.request.user:
+                context["active_count"] = self.object_list.filter(status="active").count()
+                context["appointment_count"] = self.object_list.filter(owner=self.request.user).count()
+
+        return context
+
+
+@login_required
+def cancel_appointment(request, pk):
+    """Страница подтверждения отмены записи"""
+    appointment = get_object_or_404(Appointment, pk=pk, owner=request.user)
+
+    if appointment.status != "active":
+        messages.error(request, "Эта запись уже неактивна и не может быть отменена.")
+        return redirect("med:profile")
+
+    context = {
+        "appointment": appointment,
+    }
+    return render(request, "cancel_appointment.html", context)
+
+
+@login_required
+def cancel_appointment_confirm(request, pk):
+    """Подтверждение отмены записи"""
+    appointment = get_object_or_404(Appointment, pk=pk, owner=request.user)
+
+    if appointment.status == "active":
+        appointment.status = "cancelled"
+        appointment.save()
+        messages.success(request, "Запись успешно отменена.")
+    else:
+        messages.error(request, "Нельзя отменить эту запись.")
+
+    return redirect("med:profile")
+
+def feedback(request):
+    content = Content.objects.first()
+
+    #Получаем данные из формы
+    name = request.POST.get("name", "")
+    phone = request.POST.get("phone", "")
+    email = request.POST.get("email", "")
+    message_text = request.POST.get("message", "")
+
+    # Отправляем письмо с сообщением на почту учреждения
+    try:
+        if content.email:
+            recipient_email = content.email
+            send_mail(
+                subject="Сообщение из формы обратной связи",
+                message=(
+                    f"Пользователь, {name}.\n\n"
+                    f"отправил письмо в медицинский центр «МедДиагностика».\n\n"
+                    f"Телефон пользователя:: {phone}\n"
+                    f"Email пользователя: {email}\n"
+                    f"Сообщение: {message_text}\n"
+                    f"Отправлено с сайта МедДиагностика"
+                ),
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[recipient_email],
+            )
+    except Exception as email_error:
+        print(f"Ошибка отправки письма: {email_error}")
+
+    messages.success(
+        request,
+        f" Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время!")
+    return render(request, "feedback.html", {"content": content})

@@ -12,10 +12,11 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 fw-semibold">
                     <li class="nav-item"><a class="nav-link" href="{% url 'med:company' %}">О компании</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'med:home' %}">Перечень услуг</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'med:home' %}">Контакты</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#feedback">Форма обратной связи</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'med:home' %}#services">Перечень услуг</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'med:home' %}#contacts">Контакты</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'med:feedback' %}">Форма обратной связи</a></li>
                     {% if user.is_authenticated %}
+                    <a href="{% url 'med:profile' %}" class="nav-link">Личный кабинет</a>
                         {% if user.is_staff %}
                      <a href="/admin/" class="nav-link">Админ-панель</a>
                         {% endif %}
