@@ -15,6 +15,15 @@ DEBUG = True if os.getenv("DEBUG") == "True" else False
 
 ALLOWED_HOSTS = ["*"]
 
+# Доверенные источники для CSRF
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:80",
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://0.0.0.0",
+    "http://web:8000",  # Для внутренних запросов между контейнерами
+]
+
 
 # Application definition
 

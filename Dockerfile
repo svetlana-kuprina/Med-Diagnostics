@@ -1,7 +1,7 @@
 FROM python:3.14
 LABEL authors="KuprinaSA"
 
-WORKDIR /app
+WORKDIR /code
 
 RUN pip install --no-cache-dir poetry
 
@@ -9,7 +9,6 @@ RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock ./
 
 #заставляет Poetry использовать текущую среду Python и устанавливает poetry. Можно указать --only main что бы он не устанавливал литеры зависимости flake8...
-RUN poetry config pypi-mirror.url https://pypi.org/simple/
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root --only main
 
 COPY . .

@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     environment:
-      - DEBUG=False
+      - DEBUG=True
       - DATABASE_HOST=db
     volumes:
       - .:/code
