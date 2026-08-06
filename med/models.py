@@ -21,6 +21,7 @@ class Category(models.Model):
         verbose_name_plural = "Категории услуг"
         ordering = ["name"]
 
+
 class Doctors(models.Model):
     """Модель: Информация по врачам"""
 
@@ -87,8 +88,6 @@ class Services(models.Model):
         ordering = ["name"]
 
 
-
-
 class Appointment(models.Model):
     """Модель: Запись на прием"""
 
@@ -112,27 +111,31 @@ class Appointment(models.Model):
     result = models.TextField(
         null=True, blank=True, verbose_name="Результат диагностики", help_text="Введите результат диагностики"
     )
-    
+
     def __str__(self):
         return f"Запись на прием: {self.owner} - {self.date_time}"
+
     class Meta:
         verbose_name = "Запись на прием"
         verbose_name_plural = "Записи на прием"
         ordering = ["owner", "date_time", "status"]
+
 
 class Content(models.Model):
     name = models.CharField(
         max_length=150, verbose_name="Наименование организации", help_text="Введите наименование организации"
     )
     photo = models.ImageField(
-        upload_to="static/photo/", null=True, blank=True, verbose_name="Фото организации", help_text="Загрузите фото организации"
+        upload_to="static/photo/",
+        null=True,
+        blank=True,
+        verbose_name="Фото организации",
+        help_text="Загрузите фото организации",
     )
     description = models.TextField(
         null=True, blank=True, verbose_name="Описание организации", help_text="Введите описание организации"
     )
-    history = models.TextField(
-        null=True, blank=True, verbose_name="История", help_text="Введите историю организации"
-    )
+    history = models.TextField(null=True, blank=True, verbose_name="История", help_text="Введите историю организации")
     mission = models.TextField(
         null=True, blank=True, verbose_name="Миссия и ценности", help_text="Введите миссию и ценности организации"
     )
@@ -142,11 +145,16 @@ class Content(models.Model):
     email = models.EmailField(unique=True, verbose_name="email организации")
 
     telephone = models.CharField(
-        max_length=20, verbose_name="Номер телефона", null=True, blank=True, help_text="Введите номер телефона организации"
+        max_length=20,
+        verbose_name="Номер телефона",
+        null=True,
+        blank=True,
+        help_text="Введите номер телефона организации",
     )
     operating_mode = models.CharField(
         max_length=150, verbose_name="Режим работы (кратко)", help_text="Введите режим работы организации"
     )
+
     def __str__(self):
         return self.name
 

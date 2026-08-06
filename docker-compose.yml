@@ -1,0 +1,60 @@
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env
+    environment:
+      - DEBUG=False
+      - DATABASE_HOST=db
+    volumes:
+      - .:/code
+      - static_volume:/code/static
+    expose:
+      - "8000" # Только внутри сети
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped #перезапуск в случае сбоя
+
+  nginx:
+
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80" #Смотрит наружу
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./staticfiles:/usr/share/nginx/html/staticfiles:ro
+      - ./media:/usr/share/nginx/html/media:ro
+    depends_on:
+      web:
+        condition: service_started
+    restart: unless-stopped #перезапуск в случае сбоя
+
+  db:
+    image: postgres:17 #лучше версия alpine
+    env_file:
+      - .env #лучше не делать так как базе не нужен весь env файл
+    environment: #необходимость
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    expose:
+      - "5432" # для работы с базой внутри сети
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER}" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+volumes:
+  postgres_data:
+  static_volume:

@@ -8,7 +8,6 @@ from django.core.mail import send_mail
 from datetime import datetime
 
 from django.views.generic import ListView
-from icecream import ic
 
 from config import settings
 from med.models import Doctors, Content, Category, Services, Appointment
@@ -198,10 +197,11 @@ def cancel_appointment_confirm(request, pk):
 
     return redirect("med:profile")
 
+
 def feedback(request):
     content = Content.objects.first()
 
-    #Получаем данные из формы
+    # Получаем данные из формы
     name = request.POST.get("name", "")
     phone = request.POST.get("phone", "")
     email = request.POST.get("email", "")
@@ -227,7 +227,5 @@ def feedback(request):
     except Exception as email_error:
         print(f"Ошибка отправки письма: {email_error}")
 
-    messages.success(
-        request,
-        f" Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время!")
+    messages.success(request, " Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время!")
     return render(request, "feedback.html", {"content": content})

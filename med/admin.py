@@ -17,7 +17,8 @@ class ServicesAdmin(admin.ModelAdmin):
     list_filter = ("name",)
     search_fields = ("name",)
     ordering = ("name",)
-    
+
+
 @admin.register(Doctors)
 class DoctorsAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "position", "category")
@@ -25,12 +26,14 @@ class DoctorsAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     ordering = ("name",)
 
+
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
     list_display = ("id", "owner")
     list_filter = ("owner",)
     search_fields = ("owner",)
     ordering = ("owner",)
+
 
 @admin.register(Content)
 class ContentAdmin(admin.ModelAdmin):

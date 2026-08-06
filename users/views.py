@@ -13,12 +13,11 @@ from users.models import CustomUser
 
 class RegisterView(CreateView):
     """Подтверждение почты"""
+
     model = CustomUser
     form_class = CustomUserCreationForm
     template_name = "register.html"
     success_url = reverse_lazy("users:login")
-
-
 
     def form_valid(self, form):
         """Отправка письма"""
@@ -28,15 +27,17 @@ class RegisterView(CreateView):
         user.token = token
         user.save()
         host = self.request.get_host()
-        url = f'http://{host}/users/activate/{token}/'
+        url = f"http://{host}/users/activate/{token}/"
         send_mail(
-            subject = 'Подтверждение почты',
-            message = f'Добрый день! Перейдите по ссылке для подтверждения почты: {url}',
+            subject="Подтверждение почты",
+            message=f"Добрый день! Перейдите по ссылке для подтверждения почты: {url}",
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list = [user.email] )
+            recipient_list=[user.email],
+        )
 
         return super().form_valid(form)
-    
+
+
 def email_verification_user(request, token):
     """Меняем статус пользователя"""
     user = get_object_or_404(CustomUser, token=token)
@@ -45,4 +46,4 @@ def email_verification_user(request, token):
     user.token = None
     user.save()
 
-    return redirect(reverse_lazy('users:login'))
+    return redirect(reverse_lazy("users:login"))
