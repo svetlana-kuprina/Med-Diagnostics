@@ -31,39 +31,10 @@
                         {% if not user.is_authenticated %}
                             <div class="alert alert-info alert-dismissible fade show" role="alert">
                                 <i class="bi bi-info-circle-fill me-2"></i>
-                                Для удобства рекомендуем 
-                                <a href="{% url 'users:login' %}" class="alert-link">войти</a> или 
+                                 Для удобства необходимо
+                                <a href="{% url 'users:login' %}" class="alert-link">войти</a> или
                                 <a href="{% url 'users:register' %}" class="alert-link">зарегистрироваться</a>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="nameInput" 
-                                               name="name" 
-                                               placeholder="Иван Иванов" 
-                                               required />
-                                        <label for="nameInput"><i class="bi bi-person me-1"></i> Ваше имя *</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="tel" class="form-control" id="phoneInput" 
-                                               name="phone" 
-                                               placeholder="+7 (999) 123-45-67" 
-                                               required />
-                                        <label for="phoneInput"><i class="bi bi-phone me-1"></i> Телефон *</label>
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-floating mb-3">
-                                        <input type="email" class="form-control" id="emailInput" 
-                                               name="email" 
-                                               placeholder="ivan@mail.ru" />
-                                        <label for="emailInput"><i class="bi bi-envelope me-1"></i> E-mail</label>
-                                    </div>
-                                </div>
                             </div>
                         {% else %}
                             <!-- Для авторизованных пользователей -->
@@ -78,12 +49,10 @@
                                     {% endif %}
                                 </small>
                             </div>
-                            
+
                             <!-- Скрытые поля для авторизованного пользователя -->
                             <input type="hidden" name="user_id" value="{{ user.id }}">
-                        {% endif %}
-
-                        <!-- Выбор категории -->
+                         <!-- Выбор категории -->
                         <div class="form-floating mb-3">
                             <select class="form-select" id="categorySelect" name="category" required>
                                 <option value="">Выберите категорию</option>
@@ -114,8 +83,8 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="date" class="form-control" id="dateInput" 
-                                           name="date" 
+                                    <input type="date" class="form-control" id="dateInput"
+                                           name="date"
                                            min="{% now 'Y-m-d' %}"
                                            required />
                                     <label for="dateInput"><i class="bi bi-calendar-date me-1"></i> Дата *</label>
@@ -123,10 +92,10 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating mb-3">
-                                    <input type="time" class="form-control" id="timeInput" 
-                                           name="time" 
-                                           min="08:00" 
-                                           max="20:00" 
+                                    <input type="time" class="form-control" id="timeInput"
+                                           name="time"
+                                           min="08:00"
+                                           max="20:00"
                                            required />
                                     <label for="timeInput"><i class="bi bi-clock me-1"></i> Время *</label>
                                     <div class="field-hint">Работаем с 8:00 до 20:00</div>
@@ -136,18 +105,18 @@
 
                         <!-- Комментарий -->
                         <div class="form-floating mb-3">
-                            <textarea class="form-control" id="commentInput" 
-                                      name="comment" 
-                                      placeholder="Дополнительная информация..." 
-                                      rows="3" 
+                            <textarea class="form-control" id="commentInput"
+                                      name="comment"
+                                      placeholder="Дополнительная информация..."
+                                      rows="3"
                                       style="height: 120px;"></textarea>
                             <label for="commentInput"><i class="bi bi-chat me-1"></i> Комментарий</label>
                         </div>
 
                         <!-- Согласие -->
                         <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="agreeCheck" 
-                                   name="agree" 
+                            <input class="form-check-input" type="checkbox" id="agreeCheck"
+                                   name="agree"
                                    required />
                             <label class="form-check-label" for="agreeCheck">
                                 Я согласен на обработку <a href="#" class="text-decoration-none">персональных данных</a> *
@@ -159,6 +128,7 @@
                             <i class="bi bi-calendar-check me-2"></i>Записаться на приём
                         </button>
                     </form>
+                        {% endif %}
                 </div>
             </div>
         </div>

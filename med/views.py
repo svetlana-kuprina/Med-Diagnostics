@@ -199,6 +199,7 @@ def cancel_appointment_confirm(request, pk):
 
 
 def feedback(request):
+    """Страница формы обратной связи"""
     content = Content.objects.first()
 
     # Получаем данные из формы
@@ -224,8 +225,8 @@ def feedback(request):
                 from_email=settings.EMAIL_HOST_USER,
                 recipient_list=[recipient_email],
             )
+            messages.success(request, " Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время!")
     except Exception as email_error:
         print(f"Ошибка отправки письма: {email_error}")
 
-    messages.success(request, " Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время!")
     return render(request, "feedback.html", {"content": content})
