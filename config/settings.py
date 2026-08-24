@@ -13,7 +13,7 @@ SECRET_KEY = os.getenv("SECRET_KEY") or os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS")]
 
 # Доверенные источники для CSRF
 CSRF_TRUSTED_ORIGINS = [

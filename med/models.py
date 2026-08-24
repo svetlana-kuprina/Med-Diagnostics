@@ -76,7 +76,7 @@ class Services(models.Model):
         verbose_name="Категория",
         help_text="Выберите категорию",
     )
-    doctors = models.ManyToManyField(Doctors, null=True, blank=True, related_name="services")
+    doctors = models.ManyToManyField(Doctors, blank=True, related_name="services")
     price = models.FloatField(verbose_name="Цена", help_text="Введите цену услуги")
 
     def __str__(self):
